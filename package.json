@@ -1,11 +1,21 @@
 {
   "name": "microservices-task-menager",
+  "private": true,
   "version": "1.0.0",
   "description": "a microservices project with nestJS",
-  "main": "index.ts",
   "repository": "https://github.com/oiviana/microservices-task-menager.git",
   "author": "oiviana <vianalucas80@gmail.com>",
   "license": "MIT",
+  "packageManager": "yarn@4.12.0",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint"
+  },
   "devDependencies": {
     "turbo": "^2.6.3"
   }
