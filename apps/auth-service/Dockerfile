@@ -4,18 +4,20 @@ WORKDIR /app
 
 RUN corepack enable && corepack prepare yarn@stable --activate
 
-# Copiar configurações
+
 COPY package.json yarn.lock ./
+
 COPY tsconfig*.json ./
-COPY nest-cli.json ./
+COPY apps/auth-service/nest-cli.json ./nest-cli.json
 
-# Copiar dependências específicas
-COPY apps/auth-service/package*.json ./apps/auth-service/
 
-# Copiar packages compartilhados
+COPY apps/ ./apps/
 COPY packages/ ./packages/
 
-RUN yarn install --frozen-lockfile
+RUN find ./apps -type f -not -name "package.json" -not -name "package-lock.json" -delete 2>/dev/null || true
+RUN find ./packages -type f -not -name "package.json" -delete 2>/dev/null || true
+
+RUN yarn install --immutable
 
 COPY . .
 
