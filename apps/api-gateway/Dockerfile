@@ -2,30 +2,25 @@ FROM node:20-alpine AS development
 
 WORKDIR /app
 
-# Habilita Yarn Moderno
-RUN corepack enable && corepack prepare yarn@stable --activate
+# Yarn 4 via corepack
+RUN corepack enable
 
-# Etapa 1: Copia apenas os arquivos necessários para instalação
-# Copia arquivos raiz
-COPY package.json yarn.lock ./
-
-# Copia configurações TypeScript
+# Arquivos raiz do monorepo
+COPY package.json yarn.lock .yarnrc.yml ./
 COPY tsconfig*.json ./
-COPY apps/api-gateway/nest-cli.json ./nest-cli.json
 
-# Copia TODOS os package.json (mantém a ordem para cache eficiente)
-COPY apps/ ./apps/
-COPY packages/ ./packages/
+# Copia os package.json dos workspaces
+COPY apps/api-gateway/package.json ./apps/api-gateway/
+COPY apps/auth-service/package.json ./apps/auth-service/
+COPY apps/tasks-service/package.json ./apps/tasks-service/
+COPY apps/notifications-service/package.json ./apps/notifications-service/
+COPY apps/web/package.json ./apps/web/
+COPY packages/*/package.json ./packages/*/
 
-# Remove código fonte temporariamente (apenas package.json)
-# Isso garante que mudanças no código não invalidem o cache de dependências
-RUN find ./apps -type f -not -name "package.json" -not -name "package-lock.json" -delete 2>/dev/null || true
-RUN find ./packages -type f -not -name "package.json" -delete 2>/dev/null || true
-
-# Etapa 2: Instala dependências (agora enxerga todos os workspaces)
+# Instala dependências (workspaces válidos)
 RUN yarn install --immutable
 
-# Etapa 3: Copia todo o código fonte (após instalação para melhor cache)
+# Agora copia TODO o código
 COPY . .
 
 WORKDIR /app/apps/api-gateway

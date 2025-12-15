@@ -2,18 +2,17 @@ FROM node:20-alpine AS development
 
 WORKDIR /app
 
-RUN corepack enable && corepack prepare yarn@stable --activate
+RUN corepack enable
 
-COPY package.json yarn.lock ./
-
+COPY package.json yarn.lock .yarnrc.yml ./
 COPY tsconfig*.json ./
-COPY apps/notifications-service/nest-cli.json ./nest-cli.json
 
-COPY apps/ ./apps/
-COPY packages/ ./packages/
-
-RUN find ./apps -type f -not -name "package.json" -not -name "package-lock.json" -delete 2>/dev/null || true
-RUN find ./packages -type f -not -name "package.json" -delete 2>/dev/null || true
+COPY apps/notifications-service/package.json ./apps/notifications-service/
+COPY apps/api-gateway/package.json ./apps/api-gateway/
+COPY apps/auth-service/package.json ./apps/auth-service/
+COPY apps/tasks-service/package.json ./apps/tasks-service/
+COPY apps/web/package.json ./apps/web/
+COPY packages/*/package.json ./packages/*/
 
 RUN yarn install --immutable
 

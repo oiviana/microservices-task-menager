@@ -2,22 +2,24 @@ FROM node:20-alpine AS development
 
 WORKDIR /app
 
-RUN corepack enable && corepack prepare yarn@stable --activate
+# Ativa corepack
+RUN corepack enable
 
-# Copia arquivos raiz
-COPY package.json yarn.lock ./
-COPY tsconfig*.json ./
+# Copia arquivos base do monorepo
+COPY package.json yarn.lock .yarnrc.yml ./
 
-# Copia TODOS os package.json
-COPY apps/ ./apps/
-COPY packages/ ./packages/
+# Copia SOMENTE os package.json dos workspaces
+COPY apps/web/package.json ./apps/web/
+COPY apps/api-gateway/package.json ./apps/api-gateway/
+COPY apps/auth-service/package.json ./apps/auth-service/
+COPY apps/tasks-service/package.json ./apps/tasks-service/
+COPY apps/notifications-service/package.json ./apps/notifications-service/
+COPY packages/*/package.json ./packages/*/
 
-# Remove código fonte temporariamente
-RUN find ./apps -type f -not -name "package.json" -delete 2>/dev/null || true
-RUN find ./packages -type f -not -name "package.json" -delete 2>/dev/null || true
-
+# Instala dependências do MONOREPO
 RUN yarn install --immutable
 
+# Agora copia o código completo
 COPY . .
 
 WORKDIR /app/apps/web
