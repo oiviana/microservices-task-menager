@@ -14,7 +14,19 @@
   "scripts": {
     "dev": "turbo run dev",
     "build": "turbo run build",
-    "lint": "turbo run lint"
+    "lint": "turbo run lint",
+
+    "docker:up": "docker compose up",
+    "docker:build": "docker compose up --build",
+    "docker:down": "docker compose down",
+    "docker:restart": "docker compose restart",
+    "docker:logs": "docker compose logs -f",
+    "docker:clean": "docker compose down -v",
+    "docker:web": "docker compose logs -f web",
+    "docker:api": "docker compose logs -f api-gateway",
+    "docker:auth": "docker compose logs -f auth-service",
+    "docker:tasks": "docker compose logs -f tasks-service",
+    "docker:notifications": "docker compose logs -f notifications-service"
   },
   "devDependencies": {
     "turbo": "^2.6.3"
