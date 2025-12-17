@@ -12,11 +12,9 @@ COPY apps/api-gateway/package.json ./apps/api-gateway/
 COPY apps/tasks-service/package.json ./apps/tasks-service/
 COPY apps/notifications-service/package.json ./apps/notifications-service/
 COPY apps/web/package.json ./apps/web/
-COPY packages/*/package.json ./packages/*/
+
 
 RUN yarn install --immutable
-
-COPY . .
 
 WORKDIR /app/apps/auth-service
 

@@ -1,5 +1,5 @@
 services:
-  # Frontend React Application
+  # web - Frontend React
   web:
     container_name: web
     build:
@@ -8,9 +8,16 @@ services:
       target: development
     ports:
       - '3000:3000'
-
+    volumes:
+      - ./apps/web:/app/apps/web
+      - ./packages:/app/packages 
+      - /app/node_modules
+      - /app/apps/web/node_modules
+    command: sh -c "cd /app/apps/web && yarn dev --host 0.0.0.0"
     environment:
       - NODE_ENV=development
+      - CHOKIDAR_USEPOLLING=true
+      - WATCHPACK_POLLING=true
     networks:
       - challenge-network
 
@@ -23,11 +30,16 @@ services:
       target: development
     ports:
       - '3001:3001'
-
-   
+    volumes:
+      - ./apps/api-gateway:/app/apps/api-gateway
+      - ./packages:/app/packages
+      - /app/node_modules
+      - /app/apps/api-gateway/node_modules
+    command: sh -c "cd /app/apps/api-gateway && yarn start:dev"
     environment:
       - NODE_ENV=development
       - PORT=3001
+      - CHOKIDAR_USEPOLLING=true
     depends_on:
       db:
         condition: service_started
@@ -45,11 +57,16 @@ services:
       target: development
     ports:
       - '3002:3002'
-
-
+    volumes:
+      - ./apps/auth-service:/app/apps/auth-service
+      - ./packages:/app/packages
+      - /app/node_modules
+      - /app/apps/auth-service/node_modules
+    command: sh -c "cd /app/apps/auth-service && yarn start:dev"
     environment:
       - NODE_ENV=development
       - PORT=3002
+      - CHOKIDAR_USEPOLLING=true
     depends_on:
       db:
         condition: service_started
@@ -67,11 +84,16 @@ services:
       target: development
     ports:
       - '3003:3003'
-
-  
+    volumes:
+      - ./apps/tasks-service:/app/apps/tasks-service
+      - ./packages:/app/packages
+      - /app/node_modules
+      - /app/apps/tasks-service/node_modules
+    command: sh -c "cd /app/apps/tasks-service && yarn start:dev"
     environment:
       - NODE_ENV=development
       - PORT=3003
+      - CHOKIDAR_USEPOLLING=true
     depends_on:
       db:
         condition: service_started
@@ -89,11 +111,16 @@ services:
       target: development
     ports:
       - '3004:3004'
-
-
+    volumes:
+      - ./apps/notifications-service:/app/apps/notifications-service
+      - ./packages:/app/packages
+      - /app/node_modules
+      - /app/apps/notifications-service/node_modules
+    command: sh -c "cd /app/apps/notifications-service && yarn start:dev"
     environment:
       - NODE_ENV=development
       - PORT=3004
+      - CHOKIDAR_USEPOLLING=true
     depends_on:
       db:
         condition: service_started

@@ -10,7 +10,7 @@ function App() {
           alt="logo"
         />
         <p>
-          Edit <code>src/App.tsx</code> and save to reload.
+         test hot reload
         </p>
         <a
           className="text-[#61dafb] hover:underline"

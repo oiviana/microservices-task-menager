@@ -14,13 +14,10 @@ COPY apps/api-gateway/package.json ./apps/api-gateway/
 COPY apps/auth-service/package.json ./apps/auth-service/
 COPY apps/tasks-service/package.json ./apps/tasks-service/
 COPY apps/notifications-service/package.json ./apps/notifications-service/
-COPY packages/*/package.json ./packages/*/
 
 # Instala dependências do MONOREPO
 RUN yarn install --immutable
 
-# Agora copia o código completo
-COPY . .
 
 WORKDIR /app/apps/web
 

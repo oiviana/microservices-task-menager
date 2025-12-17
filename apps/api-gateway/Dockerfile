@@ -15,13 +15,10 @@ COPY apps/auth-service/package.json ./apps/auth-service/
 COPY apps/tasks-service/package.json ./apps/tasks-service/
 COPY apps/notifications-service/package.json ./apps/notifications-service/
 COPY apps/web/package.json ./apps/web/
-COPY packages/*/package.json ./packages/*/
+
 
 # Instala dependências (workspaces válidos)
 RUN yarn install --immutable
-
-# Agora copia TODO o código
-COPY . .
 
 WORKDIR /app/apps/api-gateway
 
