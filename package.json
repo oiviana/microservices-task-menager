@@ -15,9 +15,8 @@
     "dev": "turbo run dev",
     "build": "turbo run build",
     "lint": "turbo run lint",
-
     "docker:up": "docker compose up",
-    "docker:build": "docker compose up --build",
+    "docker:build": "docker compose build",
     "docker:down": "docker compose down",
     "docker:restart": "docker compose restart",
     "docker:logs": "docker compose logs -f",
@@ -29,6 +28,8 @@
     "docker:notifications": "docker compose logs -f notifications-service"
   },
   "devDependencies": {
-    "turbo": "^2.6.3"
+    "ts-node-dev": "^2.0.0",
+    "turbo": "^2.6.3",
+    "typescript": "^5.9.3"
   }
 }
