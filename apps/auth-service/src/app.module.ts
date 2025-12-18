@@ -13,6 +13,7 @@ import { UsersModule } from './users/users.module';
       database: process.env.DB_NAME || 'microservices_tasks',
       synchronize: false,
       logging: false,
+      entities: [__dirname + '/**/*.entity{.ts,.js}'],
     }),
     UsersModule,
   ],
