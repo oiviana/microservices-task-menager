@@ -16,6 +16,13 @@ export class User {
   id: string;
 
   /**
+ * Nome do usuário
+ */
+  @Column({ type: 'varchar', length: 255 })
+  name: string;
+
+
+  /**
    * Email do usuário
    * - único
    * - indexado
@@ -28,8 +35,8 @@ export class User {
   /**
    * Senha do usuário (hash)
    */
-@Column({ name: 'password_hash', type: 'varchar', length: 255 })
-passwordHash: string;
+  @Column({ name: 'password_hash', type: 'varchar', length: 255 })
+  passwordHash: string;
 
   /**
    * Data de criação do registro
