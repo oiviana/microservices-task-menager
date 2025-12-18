@@ -67,6 +67,11 @@ services:
       - NODE_ENV=development
       - PORT=3002
       - CHOKIDAR_USEPOLLING=true
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_USER=postgres
+      - DB_PASSWORD=password
+      - DB_NAME=microservices_tasks
     depends_on:
       db:
         condition: service_started
@@ -142,7 +147,7 @@ services:
     environment:
       POSTGRES_PASSWORD: password
       POSTGRES_USER: postgres
-      POSTGRES_DB: challenge_db
+      POSTGRES_DB: microservices_tasks
     networks:
       - challenge-network
 
