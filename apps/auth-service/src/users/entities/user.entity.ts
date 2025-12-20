@@ -1,3 +1,4 @@
+import { Exclude } from 'class-transformer';
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -32,9 +33,20 @@ export class User {
   @Column({ type: 'varchar', length: 255, nullable: false })
   email: string;
 
+    /**
+   * Armazenamento do token de refresh
+   * - único
+   * - indexado
+   */
+  @Exclude()
+  @Index({ unique: true })
+  @Column({ name: 'refresh_token', type: 'varchar', length: 255, nullable: true })
+  refreshToken?: string | null;;
+
   /**
    * Senha do usuário (hash)
    */
+  @Exclude()
   @Column({ name: 'password_hash', type: 'varchar', length: 255 })
   passwordHash: string;
 

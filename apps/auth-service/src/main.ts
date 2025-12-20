@@ -1,6 +1,6 @@
-import { NestFactory } from '@nestjs/core';
+import { NestFactory, Reflector } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { ValidationPipe } from '@nestjs/common';
+import { ValidationPipe, ClassSerializerInterceptor } from '@nestjs/common';
 import { Transport, MicroserviceOptions } from '@nestjs/microservices';
 
 async function bootstrap() {
@@ -27,6 +27,12 @@ async function bootstrap() {
     }),
   );
 
+  // Serialização global (aplica @Exclude)
+  app.useGlobalInterceptors(
+    new ClassSerializerInterceptor(app.get(Reflector)),
+  );
+
   await app.listen();
 }
+
 bootstrap();
