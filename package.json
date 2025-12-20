@@ -17,7 +17,7 @@
     "lint": "turbo run lint",
     "docker:up": "docker compose up",
     "docker:build": "docker compose build",
-    "docker:down": "docker compose down",
+    "docker:down": "docker compose down -v",
     "docker:restart": "docker compose restart",
     "docker:logs": "docker compose logs -f",
     "docker:clean": "docker compose down -v",
