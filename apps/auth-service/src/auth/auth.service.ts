@@ -8,14 +8,17 @@ export class AuthService {
   constructor(
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
-  ) {}
+  ) { }
 
   async register(data: { name: string; email: string; password: string }) {
     const user = await this.usersService.create(data);
+    const tokens = this.generateTokens(user.id, user.email);
+    const hashedRefresh = await bcrypt.hash(tokens.refreshToken, 10);
 
+    await this.usersService.updateRefreshToken(user.id, hashedRefresh);
     return {
       user,
-      ...this.generateTokens(user.id, user.email),
+      ...tokens,
     };
   }
 
@@ -23,22 +26,27 @@ export class AuthService {
     const user = await this.usersService.findByEmail(email);
 
     if (!user) {
-      throw new UnauthorizedException('Invalid credentials');
+      throw new UnauthorizedException();
     }
 
     const passwordValid = await bcrypt.compare(password, user.passwordHash);
-
     if (!passwordValid) {
-      throw new UnauthorizedException('Invalid credentials');
+      throw new UnauthorizedException();
     }
+
+    const tokens = this.generateTokens(user.id, user.email);
+
+    const hashedRefresh = await bcrypt.hash(tokens.refreshToken, 10);
+
+    await this.usersService.updateRefreshToken(user.id, hashedRefresh);
 
     return {
       user,
-      ...this.generateTokens(user.id, user.email),
+      ...tokens,
     };
   }
 
-  private generateTokens(userId: string, email: string) {
+  generateTokens(userId: string, email: string) {
     const payload = { sub: userId, email };
 
     const accessToken = this.jwtService.sign(payload, {
@@ -54,4 +62,19 @@ export class AuthService {
       refreshToken,
     };
   }
+
+  async refreshTokens(userId: string, email: string) {
+    const tokens = this.generateTokens(userId, email);
+    const hashedRefresh = await bcrypt.hash(tokens.refreshToken, 10);
+
+    await this.usersService.updateRefreshToken(userId, hashedRefresh);
+
+    return tokens;
+  }
+
+  async logout(userId: string) {
+    await this.usersService.clearRefreshToken(userId);
+     return { message: 'Logged out successfully' };
+  }
+
 }
