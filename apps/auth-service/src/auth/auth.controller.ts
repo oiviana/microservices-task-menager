@@ -1,34 +1,36 @@
-import { Controller, Post, Body, UseGuards, Req } from '@nestjs/common';
+import { Controller } from '@nestjs/common';
+import { MessagePattern, Payload } from '@nestjs/microservices';
 import { AuthService } from '@/auth/auth.service';
 import { RegisterDto } from '@/auth/dto/register.dto';
 import { LoginDto } from '@/auth/dto/login.dto';
-import { JwtRefreshGuard } from '@/guards/jwt-refresh.guard';
-@Controller('auth')
-export class AuthController {
-  constructor(private readonly authService: AuthService) { }
 
-  @Post('register')
-  register(@Body() dto: RegisterDto) {
+@Controller()
+export class AuthController {
+  constructor(private readonly authService: AuthService) {}
+
+  @MessagePattern('auth.register')
+  register(@Payload() dto: RegisterDto) {
     return this.authService.register(dto);
   }
 
-  @Post('login')
-  login(@Body() dto: LoginDto) {
+  @MessagePattern('auth.login')
+  login(@Payload() dto: LoginDto) {
     return this.authService.login(dto.email, dto.password);
   }
 
-  @Post('refresh')
-  @UseGuards(JwtRefreshGuard)
-  refresh(@Req() req) {
-    const user = req.user;
-    return this.authService.refreshTokens(user.sub, user.email);
+  @MessagePattern('auth.refresh')
+  refresh(
+    @Payload()
+    data: { userId: string; email: string },
+  ) {
+    return this.authService.refreshTokens(data.userId, data.email);
   }
 
-  @Post('logout')
-  @UseGuards(JwtRefreshGuard)
-  logout(@Req() req) {
-    const user = req.user;
-    return this.authService.logout(user.sub);
+  @MessagePattern('auth.logout')
+  logout(
+    @Payload()
+    data: { userId: string },
+  ) {
+    return this.authService.logout(data.userId);
   }
-
 }
