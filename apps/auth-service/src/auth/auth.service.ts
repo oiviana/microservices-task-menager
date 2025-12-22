@@ -63,10 +63,29 @@ export class AuthService {
     };
   }
 
-  async refreshTokens(userId: string, email: string) {
-    const tokens = this.generateTokens(userId, email);
-    const hashedRefresh = await bcrypt.hash(tokens.refreshToken, 10);
+  async refreshTokens(
+    userId: string,
+    email: string,
+    refreshToken: string,
+  ) {
+    const user = await this.usersService.findOne(userId);
 
+    if (!user || !user.refreshToken) {
+      throw new UnauthorizedException();
+    }
+
+    const refreshTokenValid = await bcrypt.compare(
+      refreshToken,
+      user.refreshToken,
+    );
+
+    if (!refreshTokenValid) {
+      throw new UnauthorizedException();
+    }
+
+    const tokens = this.generateTokens(userId, email);
+
+    const hashedRefresh = await bcrypt.hash(tokens.refreshToken, 10);
     await this.usersService.updateRefreshToken(userId, hashedRefresh);
 
     return tokens;
@@ -74,7 +93,7 @@ export class AuthService {
 
   async logout(userId: string) {
     await this.usersService.clearRefreshToken(userId);
-     return { message: 'Logged out successfully' };
+    return { message: 'Logged out successfully' };
   }
 
 }

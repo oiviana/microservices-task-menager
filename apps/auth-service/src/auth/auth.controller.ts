@@ -6,7 +6,7 @@ import { LoginDto } from '@/auth/dto/login.dto';
 
 @Controller()
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(private readonly authService: AuthService) { }
 
   @MessagePattern('auth.register')
   register(@Payload() dto: RegisterDto) {
@@ -21,9 +21,13 @@ export class AuthController {
   @MessagePattern('auth.refresh')
   refresh(
     @Payload()
-    data: { userId: string; email: string },
+    data: { userId: string; email: string; refreshToken: string },
   ) {
-    return this.authService.refreshTokens(data.userId, data.email);
+    return this.authService.refreshTokens(
+      data.userId,
+      data.email,
+      data.refreshToken,
+    );
   }
 
   @MessagePattern('auth.logout')
