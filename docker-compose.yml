@@ -41,6 +41,8 @@ services:
       - PORT=3001
       - CHOKIDAR_USEPOLLING=true
       - RABBITMQ_URL=amqp://admin:admin@rabbitmq:5672
+      - JWT_SECRET=super_secret_dev_key
+      - JWT_REFRESH_SECRET=super_refresh_secret_dev_key   
     depends_on:
       db:
         condition: service_started
