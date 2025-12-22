@@ -17,6 +17,9 @@
     "paths": {
       "@/*": [
         "src/*"
+      ],
+      "@packages/contracts/*": [
+        "../../packages/contracts/src/*"
       ]
     },
     "incremental": true,
