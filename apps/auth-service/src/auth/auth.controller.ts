@@ -3,7 +3,7 @@ import { MessagePattern, Payload } from '@nestjs/microservices';
 import { AuthService } from '@/auth/auth.service';
 import { RegisterDto } from '@/auth/dto/register.dto';
 import { LoginDto } from '@/auth/dto/login.dto';
-
+import { AuthLogoutDto } from '@packages/contracts/auth/logout.dto';
 @Controller()
 export class AuthController {
   constructor(private readonly authService: AuthService) { }
@@ -30,11 +30,9 @@ export class AuthController {
     );
   }
 
-  @MessagePattern('auth.logout')
-  logout(
-    @Payload()
-    data: { userId: string },
-  ) {
-    return this.authService.logout(data.userId);
-  }
+@MessagePattern('auth.logout')
+async logout(@Payload('userId') userId: string) {
+  return this.authService.logout(userId);
+}
+
 }

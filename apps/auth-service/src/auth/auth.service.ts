@@ -2,6 +2,7 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { UsersService } from '@/users/users.service';
+import { RpcException } from '@nestjs/microservices';
 
 @Injectable()
 export class AuthService {
@@ -92,6 +93,10 @@ export class AuthService {
   }
 
   async logout(userId: string) {
+    if (!userId) {
+      throw new RpcException('UserId não informado no logout');
+    }
+
     await this.usersService.clearRefreshToken(userId);
     return { message: 'Logged out successfully' };
   }
