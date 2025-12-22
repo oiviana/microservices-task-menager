@@ -4,7 +4,6 @@ import { Body, Controller, Inject, Post, Req, UseGuards } from "@nestjs/common";
 import { ClientProxy } from "@nestjs/microservices";
 import { RegisterDto } from "./dto/register.dto";
 import { LoginDto } from "./dto/login.dto";
-
 @Controller('auth')
 export class AuthController {
   constructor(
@@ -35,7 +34,7 @@ export class AuthController {
   @Post('logout')
   logout(@Req() req) {
     return this.authClient.send('auth.logout', {
-      userId: req.user.id,
+      userId: req.user.userId,
     });
   }
 }
