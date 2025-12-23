@@ -1,10 +1,4 @@
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  CreateDateColumn,
-} from 'typeorm';
-import type { AuditChanges } from '../types/audit-change.type';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn } from 'typeorm';
 
 @Entity('audit_logs')
 export class AuditLog {
@@ -20,8 +14,8 @@ export class AuditLog {
   @Column()
   action: 'create' | 'update' | 'delete';
 
-  @Column('jsonb')
-  changes: AuditChanges
+  @Column('text')
+  message: string;
 
   @Column()
   actorId: string;
