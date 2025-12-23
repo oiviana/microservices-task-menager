@@ -5,6 +5,11 @@ import { Task } from './entities/task.entity';
 import { TaskStatus } from './types/task-status.enum';
 import { TaskPriority } from './types/task-priority.enum';
 import { AuditLogsService } from '../audit-logs/audit-logs.service';
+import { RabbitMQPublisher } from '@/infra/rabbitmq.publisher';
+import {
+  TaskCreatedEvent,
+  TaskUpdatedEvent,
+} from './types/task-events';
 
 @Injectable()
 export class TasksService {
@@ -12,6 +17,7 @@ export class TasksService {
     @InjectRepository(Task)
     private readonly taskRepository: Repository<Task>,
     private readonly auditLogsService: AuditLogsService,
+    private readonly rabbitMQPublisher: RabbitMQPublisher,
   ) {}
 
   // CREATE
@@ -21,6 +27,7 @@ export class TasksService {
     dueDate?: Date;
     priority: TaskPriority;
     createdBy: string;
+    assigneeId?: string;
   }): Promise<Task> {
     const task = this.taskRepository.create({
       ...data,
@@ -29,7 +36,6 @@ export class TasksService {
 
     const saved = await this.taskRepository.save(task);
 
-    // Audit log de criação
     await this.auditLogsService.create({
       entity: 'task',
       entityId: saved.id,
@@ -38,38 +44,20 @@ export class TasksService {
       actorId: data.createdBy,
     });
 
-    return saved;
-  }
-
-  // GET ALL (paginação)
-  async findAll(page = 1, size = 10) {
-    const [items, total] = await this.taskRepository.findAndCount({
-      order: { createdAt: 'DESC' },
-      skip: (page - 1) * size,
-      take: size,
-    });
-
-    return {
-      items,
-      meta: {
-        total,
-        page,
-        size,
-        totalPages: Math.ceil(total / size),
+    // publish event: task.created
+    await this.rabbitMQPublisher.publish<TaskCreatedEvent['payload']>({
+      type: 'task.created',
+      taskId: saved.id,
+      actorId: data.createdBy,
+      recipients: saved.assigneeId ? [saved.assigneeId] : [],
+      payload: {
+        title: saved.title,
+        status: saved.status,
       },
-    };
-  }
-
-  // GET BY ID
-  async findOne(id: string): Promise<Task> {
-    const task = await this.taskRepository.findOne({
-      where: { id },
-      relations: ['comments'],
+      occurredAt: new Date().toISOString(),
     });
 
-    if (!task) throw new NotFoundException('Task not found');
-
-    return task;
+    return saved;
   }
 
   // UPDATE
@@ -80,10 +68,12 @@ export class TasksService {
   ): Promise<Task> {
     const task = await this.findOne(id);
 
+    const previousStatus = task.status;
+    const previousAssigneeId = task.assigneeId;
+
     Object.assign(task, data);
     const updated = await this.taskRepository.save(task);
 
-    // Audit log de atualização
     await this.auditLogsService.create({
       entity: 'task',
       entityId: updated.id,
@@ -92,15 +82,53 @@ export class TasksService {
       actorId: actorId ?? updated.createdBy,
     });
 
+    // publish event: task.updated
+    if (previousStatus !== updated.status) {
+      await this.rabbitMQPublisher.publish<TaskUpdatedEvent['payload']>({
+        type: 'task.status_changed',
+        taskId: updated.id,
+        actorId: actorId ?? updated.createdBy,
+        recipients: updated.assigneeId ? [updated.assigneeId] : [],
+        payload: {
+          oldStatus: previousStatus,
+          newStatus: updated.status,
+        },
+        occurredAt: new Date().toISOString(),
+      });
+    }
+
+    // 🔔 task.assigned (payload vazio → sem generic)
+    if (
+      updated.assigneeId &&
+      previousAssigneeId !== updated.assigneeId
+    ) {
+      await this.rabbitMQPublisher.publish({
+        type: 'task.assigned',
+        taskId: updated.id,
+        actorId: actorId ?? updated.createdBy,
+        recipients: [updated.assigneeId],
+        payload: {},
+        occurredAt: new Date().toISOString(),
+      });
+    }
+
     return updated;
   }
 
-  // DELETE
+  async findOne(id: string): Promise<Task> {
+    const task = await this.taskRepository.findOne({
+      where: { id },
+      relations: ['comments'],
+    });
+
+    if (!task) throw new NotFoundException('Task not found');
+    return task;
+  }
+
   async remove(id: string, actorId?: string): Promise<void> {
     const task = await this.findOne(id);
     await this.taskRepository.remove(task);
 
-    // Audit log de remoção
     await this.auditLogsService.create({
       entity: 'task',
       entityId: id,
