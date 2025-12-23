@@ -12,7 +12,7 @@ COPY apps/api-gateway/package.json ./apps/api-gateway/
 COPY apps/tasks-service/package.json ./apps/tasks-service/
 COPY apps/notifications-service/package.json ./apps/notifications-service/
 COPY apps/web/package.json ./apps/web/
-
+COPY packages/ packages/
 
 RUN yarn install --immutable
 

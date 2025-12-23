@@ -15,7 +15,7 @@ COPY apps/auth-service/package.json ./apps/auth-service/
 COPY apps/tasks-service/package.json ./apps/tasks-service/
 COPY apps/notifications-service/package.json ./apps/notifications-service/
 COPY apps/web/package.json ./apps/web/
-
+COPY packages/ packages/
 
 # Instala dependências (workspaces válidos)
 RUN yarn install --immutable
