@@ -39,7 +39,7 @@ export class User {
    * - indexado
    */
   @Exclude()
-  @Index({ unique: true })
+  @Index()
   @Column({ name: 'refresh_token', type: 'varchar', length: 255, nullable: true })
   refreshToken?: string | null;;
 
