@@ -3,7 +3,7 @@ import { TasksService } from './tasks.service';
 import { TasksController } from './tasks.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Task } from './entities/task.entity';
-import { RabbitMQPublisher } from '@/infra/rabbitmq.publisher';
+import { RabbitMQPublisher } from '../infra/rabbitmq.publisher';
 import { AuditLogsModule } from '@/audit-logs/audit-logs.module';
 
 @Module({

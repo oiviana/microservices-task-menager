@@ -5,7 +5,7 @@ import { Task } from './entities/task.entity';
 import { TaskStatus } from './types/task-status.enum';
 import { TaskPriority } from './types/task-priority.enum';
 import { AuditLogsService } from '../audit-logs/audit-logs.service';
-import { RabbitMQPublisher } from '@/infra/rabbitmq.publisher';
+import { RabbitMQPublisher } from '../infra/rabbitmq.publisher';
 import {
   TaskCreatedEvent,
   TaskUpdatedEvent,
