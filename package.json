@@ -17,7 +17,8 @@
     "lint": "turbo run lint",
     "docker:up": "docker compose up",
     "docker:build": "docker compose build",
-    "docker:down": "docker compose down -v",
+    "docker:downv": "docker compose down -v",
+    "docker:down": "docker compose down",
     "docker:restart": "docker compose restart",
     "docker:logs": "docker compose logs -f",
     "docker:clean": "docker compose down -v",
@@ -25,7 +26,8 @@
     "docker:api": "docker compose logs -f api-gateway",
     "docker:auth": "docker compose logs -f auth-service",
     "docker:tasks": "docker compose logs -f tasks-service",
-    "docker:notifications": "docker compose logs -f notifications-service"
+    "docker:notifications": "docker compose logs -f notifications-service",
+    "migrate:all": "docker compose up -d && docker compose exec auth-service yarn migration:run && docker compose exec tasks-service yarn migration:run && docker compose exec notifications-service yarn migration:run"
   },
   "devDependencies": {
     "ts-node-dev": "^2.0.0",
