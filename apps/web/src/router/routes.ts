@@ -4,6 +4,7 @@ import { requireAuth } from './auth.guard'
 
 import LoginPage from '@/routes/auth/login.page'
 import DashboardPage from '@/routes/dashboard/dashboard.page'
+import RegisterPage from '@/routes/auth/register.page'
 
 const indexRoute = createRoute({
   getParentRoute: () => rootRoute,
@@ -30,8 +31,15 @@ const dashboardRoute = createRoute({
   component: DashboardPage,
 })
 
+const registerRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/register',
+  component: RegisterPage,
+})
+
 export const routeTree = rootRoute.addChildren([
   indexRoute,
   loginRoute,
   dashboardRoute,
+  registerRoute
 ])

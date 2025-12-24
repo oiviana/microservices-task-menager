@@ -5,6 +5,7 @@ import { z } from 'zod'
 import { router } from '@/router'
 import { registerSchema } from '@/schemas/auth.schema'
 import { FormInput } from '@/components/ui/FormInput'
+import { toast } from 'sonner'
 
 type RegisterFormData = z.infer<typeof registerSchema>
 
@@ -15,14 +16,18 @@ export function RegisterForm() {
     resolver: zodResolver(registerSchema),
   })
 
-  const onSubmit = (data: RegisterFormData) => {
-    registerMutation.mutate(data, {
-      onSuccess: () => {
-        router.navigate({ to: '/login' })
-      },
-    })
-  }
-
+const onSubmit = (data: RegisterFormData) => {
+  registerMutation.mutate(data, {
+    onSuccess: () => {
+      toast.success('Conta criada com sucesso!')
+      router.navigate({ to: '/login' })
+    },
+    onError: (error) => {
+      console.error(error)
+      toast.error('Erro ao criar a conta')
+    },
+  })
+}
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="max-w-md mx-auto mt-10 p-6 border rounded-md shadow-sm">
       <FormInput
