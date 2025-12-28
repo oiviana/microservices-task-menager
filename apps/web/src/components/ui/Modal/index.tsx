@@ -39,7 +39,7 @@ export function CustomModal({
         <div className="mt-4">{children}</div>
         <DialogClose asChild>
           <Button variant="ghost" className="absolute top-3 right-3">
-            ✕
+            
           </Button>
         </DialogClose>
       </DialogContent>
