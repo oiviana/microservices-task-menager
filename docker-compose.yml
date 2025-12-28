@@ -19,6 +19,9 @@ services:
       - CHOKIDAR_USEPOLLING=true
       - WATCHPACK_POLLING=true
       - VITE_API_URL=http://host.docker.internal:3001
+    depends_on:
+      api-gateway:
+        condition: service_started
     networks:
       - challenge-network
 
@@ -46,9 +49,9 @@ services:
       - JWT_REFRESH_SECRET=super_refresh_secret_dev_key
     depends_on:
       db:
-        condition: service_started
+        condition: service_healthy
       rabbitmq:
-        condition: service_started
+        condition: service_healthy
     networks:
       - challenge-network
 
@@ -81,9 +84,9 @@ services:
       - JWT_REFRESH_SECRET=super_refresh_secret_dev_key
     depends_on:
       db:
-        condition: service_started
+        condition: service_healthy
       rabbitmq:
-        condition: service_started
+        condition: service_healthy
     networks:
       - challenge-network
 
@@ -114,9 +117,9 @@ services:
       - RABBITMQ_URL=amqp://admin:admin@rabbitmq:5672
     depends_on:
       db:
-        condition: service_started
+        condition: service_healthy
       rabbitmq:
-        condition: service_started
+        condition: service_healthy
     networks:
       - challenge-network
 
@@ -147,9 +150,9 @@ services:
       - RABBITMQ_URL=amqp://admin:admin@rabbitmq:5672
     depends_on:
       db:
-        condition: service_started
+        condition: service_healthy
       rabbitmq:
-        condition: service_started
+        condition: service_healthy
     networks:
       - challenge-network
 
@@ -167,6 +170,11 @@ services:
       POSTGRES_PASSWORD: password
       POSTGRES_USER: postgres
       POSTGRES_DB: microservices_tasks
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
     networks:
       - challenge-network
 
@@ -184,6 +192,11 @@ services:
       RABBITMQ_DEFAULT_PASS: admin
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
     networks:
       - challenge-network
 
