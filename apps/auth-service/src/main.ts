@@ -12,8 +12,10 @@ async function bootstrap() {
         urls: [process.env.RABBITMQ_URL!],
         queue: 'auth_queue',
         queueOptions: {
-          durable: true,
+          durable: true
         },
+        retryAttempts: 10,
+        retryDelay: 3000,
       },
     },
   );

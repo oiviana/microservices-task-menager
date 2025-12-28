@@ -19,7 +19,11 @@ import { JwtStrategy } from '@/strategies/jwt.strategy';
         options: {
           urls: [process.env.RABBITMQ_URL ?? 'amqp://admin:admin@rabbitmq:5672'],
           queue: 'auth_queue',
-          queueOptions: { durable: true },
+          queueOptions: {
+            durable: true
+          },
+          retryAttempts: 10,
+          retryDelay: 3000,
         },
       },
     ]),
@@ -27,4 +31,4 @@ import { JwtStrategy } from '@/strategies/jwt.strategy';
   controllers: [AuthController],
   providers: [JwtStrategy],
 })
-export class AuthModule {}
+export class AuthModule { }

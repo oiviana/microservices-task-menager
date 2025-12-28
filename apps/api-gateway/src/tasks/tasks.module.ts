@@ -11,11 +11,15 @@ import { TasksController } from './tasks.controller';
         options: {
           urls: [process.env.RABBITMQ_URL ?? 'amqp://admin:admin@rabbitmq:5672'],
           queue: 'tasks_queue',
-          queueOptions: { durable: true },
+          queueOptions: {
+            durable: true
+          },
+          retryAttempts: 10,
+          retryDelay: 3000,
         },
       },
     ]),
   ],
   controllers: [TasksController],
 })
-export class TasksModule {}
+export class TasksModule { }
