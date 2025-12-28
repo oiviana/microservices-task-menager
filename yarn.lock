@@ -2442,6 +2442,12 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@repo/logger@npm:*, @repo/logger@workspace:packages/logger":
+  version: 0.0.0-use.local
+  resolution: "@repo/logger@workspace:packages/logger"
+  languageName: unknown
+  linkType: soft
+
 "@rolldown/pluginutils@npm:1.0.0-beta.53":
   version: 1.0.0-beta.53
   resolution: "@rolldown/pluginutils@npm:1.0.0-beta.53"
@@ -4630,6 +4636,7 @@ __metadata:
     "@nestjs/schematics": "npm:^11.0.0"
     "@nestjs/testing": "npm:^11.0.1"
     "@nestjs/typeorm": "npm:^11.0.0"
+    "@repo/logger": "npm:*"
     "@types/amqplib": "npm:^0"
     "@types/bcrypt": "npm:^6.0.0"
     "@types/express": "npm:^5.0.0"
@@ -10888,6 +10895,7 @@ __metadata:
     "@nestjs/schematics": "npm:^11.0.0"
     "@nestjs/testing": "npm:^11.0.1"
     "@nestjs/typeorm": "npm:^11.0.0"
+    "@repo/logger": "npm:*"
     "@types/express": "npm:^5.0.0"
     "@types/jest": "npm:^30.0.0"
     "@types/node": "npm:^22.10.7"
