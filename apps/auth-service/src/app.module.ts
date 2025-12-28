@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { AppLoggerModule } from './logger/logger.module';
 import { UsersModule } from '@/users/users.module';
 import { AuthModule } from '@/auth/auth.module';
 
@@ -18,8 +19,7 @@ import { AuthModule } from '@/auth/auth.module';
     }),
     UsersModule,
     AuthModule,
+    AppLoggerModule,
   ],
-  controllers: [],
-  providers: [],
 })
 export class AppModule { }
