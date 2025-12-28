@@ -97,7 +97,7 @@ export class TasksService {
       });
     }
 
-    // 🔔 task.assigned (payload vazio → sem generic)
+    //  task.assigned (payload vazio → sem generic)
     if (
       updated.assigneeId &&
       previousAssigneeId !== updated.assigneeId
@@ -113,6 +113,25 @@ export class TasksService {
     }
 
     return updated;
+  }
+
+  // todas as tasks com paginação
+  async findAll(page: number = 1, size: number = 10): Promise<{ data: Task[]; total: number; page: number; size: number }> {
+    const skip = (page - 1) * size;
+    
+    const [data, total] = await this.taskRepository.findAndCount({
+      relations: ['comments'],
+      skip,
+      take: size,
+      order: { createdAt: 'DESC' },
+    });
+
+    return {
+      data,
+      total,
+      page,
+      size,
+    };
   }
 
   async findOne(id: string): Promise<Task> {
