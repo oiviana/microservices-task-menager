@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { AppLoggerModule } from './logger/logger.module';
+import { AppLoggerModule } from '@repo/logger';
 import { UsersModule } from '@/users/users.module';
 import { AuthModule } from '@/auth/auth.module';
 

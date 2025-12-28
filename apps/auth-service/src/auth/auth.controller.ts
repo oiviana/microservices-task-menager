@@ -3,7 +3,7 @@ import { MessagePattern, Payload } from '@nestjs/microservices';
 import { AuthService } from '@/auth/auth.service';
 import { RegisterDto } from '@/auth/dto/register.dto';
 import { LoginDto } from '@/auth/dto/login.dto';
-import { CustomLogger } from '@/logger/custom-logger';
+import { CustomLogger } from '@repo/logger';
 
 @Controller()
 export class AuthController {

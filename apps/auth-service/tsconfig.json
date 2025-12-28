@@ -10,6 +10,9 @@
       ],
       "@packages/contracts/*": [
         "../../packages/contracts/src/*"
+      ],
+      "@repo/logger": [
+        "../../packages/logger/src"
       ]
     },
     "resolvePackageJsonExports": true,
