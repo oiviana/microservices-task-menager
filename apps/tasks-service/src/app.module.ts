@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { AppLoggerModule } from '@repo/logger';
 import { TasksModule } from './tasks/tasks.module';
 import { CommentsModule } from './comments/comments.module';
 import { AuditLogsModule } from './audit-logs/audit-logs.module';
@@ -17,6 +18,7 @@ import { entities } from './database/entities';
       entities,
       synchronize: false,
     }),
+    AppLoggerModule,
     TasksModule,
     CommentsModule,
     AuditLogsModule,
