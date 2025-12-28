@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, Inject } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Task } from './entities/task.entity';
@@ -10,6 +10,7 @@ import {
   TaskCreatedEvent,
   TaskUpdatedEvent,
 } from './types/task-events';
+import { PinoLogger } from 'nestjs-pino';
 
 @Injectable()
 export class TasksService {
@@ -18,7 +19,11 @@ export class TasksService {
     private readonly taskRepository: Repository<Task>,
     private readonly auditLogsService: AuditLogsService,
     private readonly rabbitMQPublisher: RabbitMQPublisher,
-  ) {}
+    @Inject('PinoLogger')
+    private readonly logger: PinoLogger,
+  ) {
+    this.logger.setContext(TasksService.name);
+  }
 
   // CREATE
   async create(data: {
@@ -29,12 +34,17 @@ export class TasksService {
     createdBy: string;
     assigneeId?: string;
   }): Promise<Task> {
+    this.logger.info('Criando nova task');
+    this.logger.debug(`Payload: ${JSON.stringify(data)}`);
+
     const task = this.taskRepository.create({
       ...data,
       status: TaskStatus.TODO,
     });
 
     const saved = await this.taskRepository.save(task);
+
+    this.logger.info(`Task criada com ID: ${saved.id}`);
 
     await this.auditLogsService.create({
       entity: 'task',
@@ -44,7 +54,7 @@ export class TasksService {
       actorId: data.createdBy,
     });
 
-    // publish event: task.created
+    this.logger.info('Publicando evento task.created');
     await this.rabbitMQPublisher.publish<TaskCreatedEvent['payload']>({
       type: 'task.created',
       taskId: saved.id,
@@ -66,6 +76,9 @@ export class TasksService {
     data: Partial<Omit<Task, 'id' | 'createdAt' | 'updatedAt'>>,
     actorId?: string,
   ): Promise<Task> {
+    this.logger.info(`Atualizando task com ID: ${id}`);
+    this.logger.debug(`Payload de atualização: ${JSON.stringify(data)}`);
+
     const task = await this.findOne(id);
 
     const previousStatus = task.status;
@@ -73,6 +86,8 @@ export class TasksService {
 
     Object.assign(task, data);
     const updated = await this.taskRepository.save(task);
+
+    this.logger.info(`Task atualizada com ID: ${updated.id}`);
 
     await this.auditLogsService.create({
       entity: 'task',
@@ -84,6 +99,7 @@ export class TasksService {
 
     // publish event: task.updated
     if (previousStatus !== updated.status) {
+      this.logger.info('Status da task mudou, publicando task.status_changed');
       await this.rabbitMQPublisher.publish<TaskUpdatedEvent['payload']>({
         type: 'task.status_changed',
         taskId: updated.id,
@@ -97,11 +113,8 @@ export class TasksService {
       });
     }
 
-    //  task.assigned (payload vazio → sem generic)
-    if (
-      updated.assigneeId &&
-      previousAssigneeId !== updated.assigneeId
-    ) {
+    if (updated.assigneeId && previousAssigneeId !== updated.assigneeId) {
+      this.logger.info('Assignee da task mudou, publicando task.assigned');
       await this.rabbitMQPublisher.publish({
         type: 'task.assigned',
         taskId: updated.id,
@@ -115,10 +128,11 @@ export class TasksService {
     return updated;
   }
 
-  // todas as tasks com paginação
+  // FIND ALL
   async findAll(page: number = 1, size: number = 10): Promise<{ data: Task[]; total: number; page: number; size: number }> {
+    this.logger.info(`Buscando todas as tasks, página: ${page}, tamanho: ${size}`);
+
     const skip = (page - 1) * size;
-    
     const [data, total] = await this.taskRepository.findAndCount({
       relations: ['comments'],
       skip,
@@ -126,27 +140,33 @@ export class TasksService {
       order: { createdAt: 'DESC' },
     });
 
-    return {
-      data,
-      total,
-      page,
-      size,
-    };
+    this.logger.info(`Encontradas ${data.length} tasks de um total de ${total}`);
+    return { data, total, page, size };
   }
 
   async findOne(id: string): Promise<Task> {
+    this.logger.info(`Buscando task com ID: ${id}`);
+
     const task = await this.taskRepository.findOne({
       where: { id },
       relations: ['comments'],
     });
 
-    if (!task) throw new NotFoundException('Task not found');
+    if (!task) {
+      this.logger.warn(`Task com ID ${id} não encontrada`);
+      throw new NotFoundException('Task not found');
+    }
+
     return task;
   }
 
   async remove(id: string, actorId?: string): Promise<void> {
+    this.logger.info(`Removendo task com ID: ${id}`);
+
     const task = await this.findOne(id);
     await this.taskRepository.remove(task);
+
+    this.logger.info(`Task removida com sucesso, ID: ${id}`);
 
     await this.auditLogsService.create({
       entity: 'task',
