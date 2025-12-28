@@ -5,7 +5,7 @@ import {
   ClassSerializerInterceptor,
 } from '@nestjs/common';
 import { Transport, MicroserviceOptions } from '@nestjs/microservices';
-import { CustomLogger } from '@/logger/custom-logger';
+import { CustomLogger } from '@repo/logger';
 
 async function bootstrap() {
   const app = await NestFactory.createMicroservice<MicroserviceOptions>(

@@ -2445,6 +2445,11 @@ __metadata:
 "@repo/logger@npm:*, @repo/logger@workspace:packages/logger":
   version: 0.0.0-use.local
   resolution: "@repo/logger@workspace:packages/logger"
+  peerDependencies:
+    "@nestjs/common": "*"
+    nestjs-pino: "*"
+    pino: "*"
+    pino-http: "*"
   languageName: unknown
   linkType: soft
 

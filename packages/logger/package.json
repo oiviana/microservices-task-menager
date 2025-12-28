@@ -3,5 +3,17 @@
   "version": "1.0.0",
   "private": true,
   "main": "dist/index.js",
-  "types": "dist/index.d.ts"
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "peerDependencies": {
+    "@nestjs/common": "*",
+    "nestjs-pino": "*",
+    "pino": "*",
+    "pino-http": "*"
+  }
 }
