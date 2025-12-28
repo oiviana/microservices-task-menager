@@ -7,13 +7,17 @@ export class RabbitMQPublisher implements OnModuleInit {
   private readonly logger = new Logger(RabbitMQPublisher.name);
   private channel: amqp.Channel;
 
-  async onModuleInit() {
-    const connection = await amqp.connect('amqp://localhost');
-    this.channel = await connection.createChannel();
-    await this.channel.assertQueue('notifications', { durable: true });
+async onModuleInit() {
+  const rabbitUrl =
+    process.env.RABBITMQ_URL ?? 'amqp://localhost';
 
-    this.logger.log('RabbitMQ Publisher conectado');
-  }
+  const connection = await amqp.connect(rabbitUrl);
+  this.channel = await connection.createChannel();
+  await this.channel.assertQueue('notifications', { durable: true });
+
+  this.logger.log('RabbitMQ Publisher conectado');
+}
+
 
   async publish<TPayload>(
     event: NotificationEvent<TPayload>,
