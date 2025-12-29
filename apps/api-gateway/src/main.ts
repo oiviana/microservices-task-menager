@@ -2,9 +2,13 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { CustomLogger } from '@repo/logger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  // Recupera o CustomLogger do container de DI e registra como logger oficial da aplicação
+  app.useLogger(app.get(CustomLogger));
 
   app.setGlobalPrefix('api');
 
