@@ -3,6 +3,11 @@ import { MessagePattern, Payload } from '@nestjs/microservices';
 import { NotificationsService } from './notifications.service';
 import { NotificationsGateway } from './notifications.gateway';
 import { Notification } from './entities/notification.entity';
+import { TaskCreatedPayloadDto } from './dto/task-created.dto';
+import { TaskUpdatedPayloadDto } from './dto/task-updated.dto';
+import { TaskStatusChangedPayloadDto } from './dto/task-status-changed.dto';
+import { CommentAddedPayloadDto } from './dto/comment-added.dto';
+import { TaskAssignedPayloadDto } from './dto/task-assigned.dto';
 
 @Controller()
 export class NotificationsListener {
@@ -13,7 +18,7 @@ export class NotificationsListener {
   ) {}
 
   @MessagePattern('task.created')
-  handleTaskCreated(@Payload() data: any) {
+  handleTaskCreated(@Payload() data: TaskCreatedPayloadDto) {
     this.logger.log(`Task criada: ${data.id}`);
     const notification = this.buildNotification(
       data.assignedUserId,
@@ -25,7 +30,7 @@ export class NotificationsListener {
   }
 
   @MessagePattern('task.updated')
-  handleTaskUpdated(@Payload() data: any) {
+  handleTaskUpdated(@Payload() data: TaskUpdatedPayloadDto) {
     this.logger.log(`Task atualizada: ${data.id}`);
     const notification = this.buildNotification(
       data.assignedUserId,
@@ -37,7 +42,7 @@ export class NotificationsListener {
   }
 
   @MessagePattern('task.status_changed')
-  handleTaskStatusChanged(@Payload() data: any) {
+  handleTaskStatusChanged(@Payload() data: TaskStatusChangedPayloadDto) {
     this.logger.log(`Status da task alterado: ${data.id} → ${data.newStatus}`);
     const notification = this.buildNotification(
       data.assignedUserId,
@@ -49,7 +54,7 @@ export class NotificationsListener {
   }
 
   @MessagePattern('comment.added')
-  handleCommentAdded(@Payload() data: any) {
+  handleCommentAdded(@Payload() data: CommentAddedPayloadDto) {
     this.logger.log(`Comentário adicionado na task: ${data.taskId}`);
     const notification = this.buildNotification(
       data.targetUserId,
@@ -61,7 +66,7 @@ export class NotificationsListener {
   }
 
   @MessagePattern('task.assigned')
-  handleTaskAssigned(@Payload() data: any) {
+  handleTaskAssigned(@Payload() data: TaskAssignedPayloadDto) {
     this.logger.log(`Task atribuída ao usuário: ${data.assignedUserId}`);
     const notification = this.buildNotification(
       data.assignedUserId,
