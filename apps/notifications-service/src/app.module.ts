@@ -1,9 +1,11 @@
 import { Module } from '@nestjs/common';
+import { AppLoggerModule } from '@repo/logger';
 import { NotificationsService } from './notifications/notifications.service';
 import { NotificationsGateway } from './notifications/notifications.gateway';
-import { RabbitMQService } from './notifications/rabbitmq.service';
+import { NotificationsListener } from './notifications/notifications.listener';
 
 @Module({
-  providers: [NotificationsService, NotificationsGateway, RabbitMQService],
+  imports: [AppLoggerModule],
+  providers: [NotificationsService, NotificationsGateway, NotificationsListener],
 })
 export class AppModule {}
