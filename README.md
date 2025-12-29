@@ -101,9 +101,9 @@ yarn docker:up
 
 5) pgAdmin (UI para gerenciar Postgres)
 
-3️⃣ Acesse o pgAdmin no navegador:
+Acesse o pgAdmin no navegador:
 
-👉 http://localhost:5050
+http://localhost:5050
 
 Login:
 
@@ -111,7 +111,7 @@ Email: admin@admin.com
 
 Senha: admin
 
-4️⃣ Conecte no Postgres (uma vez só)
+Conecte no Postgres (uma vez só)
 
 No pgAdmin:
 
