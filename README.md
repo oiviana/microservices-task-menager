@@ -72,37 +72,92 @@ Total aproximado: 31–34 horas (estimativa a ser refinada conforme progresso).
 
 ## Como rodar (Quickstart)
 
-Pré-requisitos: `docker` e `docker compose` (v2) instalados; `yarn` disponível para comandos auxiliares.
+Pré-requisitos: `docker` (daemon iniciado) e `docker compose` (v2) instalados; `yarn` disponível.
 
-1) Build (opcional — há `yarn docker:build` no projeto):
+1) Instalar dependências na raiz:
+
+```bash
+yarn
+```
+
+2) (Opcional) Rebuild das imagens via script do projeto:
 
 ```bash
 yarn docker:build
 ```
 
-2) Subir ambiente de desenvolvimento:
+3) Subir o ambiente via script do projeto:
 
 ```bash
-docker compose up -d --build
+yarn docker:up
 ```
 
-3) Acessos úteis:
+4) Acessos úteis:
 
 - Frontend (dev): http://localhost:3000
 - API Gateway: http://localhost:3001
 - Postgres (porta exposta): 5432
 - RabbitMQ management: http://localhost:15672 (user: `admin`, pass: `admin`)
 
-4) Logs (exemplo para `tasks-service`):
+5) pgAdmin (UI para gerenciar Postgres)
+
+3️⃣ Acesse o pgAdmin no navegador:
+
+👉 http://localhost:5050
+
+Login:
+
+Email: admin@admin.com
+
+Senha: admin
+
+4️⃣ Conecte no Postgres (uma vez só)
+
+No pgAdmin:
+
+- `Add New Server`
+
+Aba `General`
+
+Name: Postgres Microservices
+
+Aba `Connection`
+
+Host name/address: `db`
+
+Port: `5432`
+
+Username: `postgres`
+
+Password: `password`
+
+Marque `Save password`
+
+Clique em `Save`
+
+Pronto — você vai enxergar:
+
+- Todas as tabelas
+- Registros
+- Schemas
+- Logs de queries
+
+6) Rodar migrações (após conectar o banco no pgAdmin):
 
 ```bash
-docker compose logs -f tasks-service
+yarn migrate:all
 ```
 
-Para parar e remover containers:
+7) Logs (exemplo para `tasks-service`):
 
 ```bash
-docker compose down
+yarn docker:tasks
+```
+
+Para parar e remover containers (script do projeto):
+
+```bash
+yarn docker:down
 ```
 
 ---
